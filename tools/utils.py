@@ -49,6 +49,8 @@ def GuessOS():
   id = platform.system()
   if id == 'Linux':
     return 'linux'
+  elif id in ('HarmonyOS', 'OpenHarmony', 'OHOS'):
+    return 'openharmony'
   elif id == 'Darwin':
     return 'macos'
   elif id.find('CYGWIN') >= 0:

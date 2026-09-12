@@ -50,6 +50,8 @@ compression, VM code caches, WebAssembly, optimizing JIT and SQLite. Run it with
 `TMPDIR` pointing to private writable storage:
 
 ```sh
+export NODE_OHOS_BUILD_ROOT=${NODE_OHOS_BUILD_ROOT:-/data/storage/el2/base/haps/entry/files/node-24.21.0-build}
+export TMPDIR="$NODE_OHOS_BUILD_ROOT/tmp"
 "$NODE_OHOS_BUILD_ROOT/source/out/Release/node" tools/ohos/smoke.mjs
 ```
 
