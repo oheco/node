@@ -36,6 +36,8 @@ tests = [
     'net-pingpong', 'http-parser',
     'inspector-module', 'inspector-contexts',
     'module-create-require', 'sqlite-transactions', 'sqlite-data-types',
+    'cli-node-options', 'options-binding', 'trace-events-api',
+    'trace-events-file-pattern', 'zlib', 'zlib-truncated', 'zlib-from-gzip',
 ]
 environment = os.environ.copy()
 for name in ('NODE_OPTIONS', 'NODE_PATH', 'LD_PRELOAD', 'LD_LIBRARY_PATH'):

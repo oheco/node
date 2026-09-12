@@ -60,7 +60,11 @@ void DebugOptions::CheckOptions(std::vector<std::string>* errors,
   }
 
   using std::operator""sv;
+#if NODE_OHOS_LEGACY_LIBCXX
+  auto entries = OhosSplitStringView(inspect_publish_uid_string, ',');
+#else
   auto entries = std::views::split(inspect_publish_uid_string, ","sv);
+#endif
   inspect_publish_uid.console = false;
   inspect_publish_uid.http = false;
   for (const auto& entry : entries) {

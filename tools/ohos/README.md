@@ -42,6 +42,13 @@ other dependencies. The build uses the bundled full ICU data. These dependencies
 are not downloaded from unpinned locations during the native build.
 The SDK, Python and Ninja are separately installed build prerequisites.
 
+The OHOS SDK used here ships libc++ 15. Its available C++20 ranges algorithms
+are enabled with `_LIBCPP_ENABLE_EXPERIMENTAL`; the few missing view adaptors
+have OHOS-specific equivalents. This does not require `libc++experimental`.
+The SDK also lacks `make_unique_for_overwrite`, for which the adaptation uses
+equivalent default-initialized arrays. zlib keeps ARM CRC/crypto acceleration
+using the function target attribute spelling accepted by native Clang 15.
+
 ## Validation in progress
 
 `smoke.mjs` exercises platform identity, full ICU, module loading, filesystem

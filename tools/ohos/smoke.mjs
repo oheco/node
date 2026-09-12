@@ -25,6 +25,32 @@ await test('native platform and full ICU', () => {
   assert.match(new Intl.DateTimeFormat('zh-CN').format(new Date('2026-09-12T00:00:00Z')), /2026/);
 });
 
+await test('builtin module enumeration and inspector option parsing', () => {
+  const code = `const m = require('node:module').builtinModules;
+    if (!m.includes('fs') || !m.includes('crypto') || !m.every(x => typeof x === 'string')) process.exit(1);`;
+  for (const value of ['', 'stderr', 'http', 'stderr,http']) {
+    const result = spawnSync(process.execPath, [`--inspect-publish-uid=${value}`, '-e', code],
+      { encoding: 'utf8', timeout: 30000 });
+    assert.equal(result.status, 0, result.stderr);
+  }
+  for (const value of ['stderr,', ',http', 'stderr,,http', 'invalid']) {
+    const result = spawnSync(process.execPath, [`--inspect-publish-uid=${value}`, '-e', code],
+      { encoding: 'utf8', timeout: 30000 });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /destination can be stderr or http/);
+  }
+});
+
+await test('trace event category parsing and output', () => {
+  const output = path.join(tmp, 'trace.json');
+  const result = spawnSync(process.execPath, ['--trace-events-enabled',
+    '--trace-event-categories=v8,node', `--trace-event-file-pattern=${output}`, '-e', '0'],
+    { encoding: 'utf8', timeout: 30000 });
+  assert.equal(result.status, 0, result.stderr);
+  const { traceEvents } = JSON.parse(fs.readFileSync(output, 'utf8'));
+  assert.ok(traceEvents.some(event => /(^|,)(v8|node)(,|$)/.test(event.cat)));
+});
+
 await test('ES modules and CommonJS in a path containing spaces', async () => {
   const dir = path.join(tmp, 'module space');
   fs.mkdirSync(dir);
@@ -139,6 +165,7 @@ await test('crypto, secure randomness and compression', () => {
   assert.equal(crypto.createHash('sha256').update('abc').digest('hex'),
     'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
   assert.notDeepEqual(crypto.randomBytes(32), crypto.randomBytes(32));
+  assert.equal(zlib.crc32('123456789'), 0xcbf43926);
   const payload = Buffer.from('鸿蒙 '.repeat(1000));
   assert.deepEqual(zlib.gunzipSync(zlib.gzipSync(payload)), payload);
   assert.deepEqual(zlib.brotliDecompressSync(zlib.brotliCompressSync(payload)), payload);

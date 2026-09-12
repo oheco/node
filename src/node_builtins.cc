@@ -60,10 +60,20 @@ BuiltinLoader::BuiltinLoader()
 #endif  // HAVE_AMARO
 }
 
+#if NODE_OHOS_LEGACY_LIBCXX
+std::vector<std::string> BuiltinLoader::GetBuiltinIds() const {
+  auto source = source_.read();
+  std::vector<std::string> ids;
+  ids.reserve(source->size());
+  for (const auto& entry : *source) ids.emplace_back(entry.first);
+  return ids;
+}
+#else
 std::ranges::keys_view<std::ranges::ref_view<const BuiltinSourceMap>>
 BuiltinLoader::GetBuiltinIds() const {
   return std::views::keys(*source_.read());
 }
+#endif
 
 bool BuiltinLoader::Exists(const char* id) {
   auto source = source_.read();

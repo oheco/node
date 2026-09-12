@@ -14,6 +14,7 @@
 #include "builtin_info.h"
 #include "node_external_reference.h"
 #include "node_mutex.h"
+#include "node_ohos_compat.h"
 #include "node_threadsafe_cow.h"
 #include "node_union_bytes.h"
 #include "v8.h"
@@ -129,9 +130,13 @@ class NODE_EXTERN_PRIVATE BuiltinLoader {
 
   void CopySourceAndCodeCacheReferenceFrom(const BuiltinLoader* other);
 
+#if NODE_OHOS_LEGACY_LIBCXX
+  [[nodiscard]] std::vector<std::string> GetBuiltinIds() const;
+#else
   [[nodiscard]] std::ranges::keys_view<
       std::ranges::ref_view<const BuiltinSourceMap>>
   GetBuiltinIds() const;
+#endif
 
   void SetEagerCompile() { should_eager_compile_ = true; }
 

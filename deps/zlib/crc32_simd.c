@@ -387,7 +387,13 @@ uint32_t ZLIB_INTERNAL crc32_sse42_simd_(  /* SSE4.2+PCLMUL */
 #endif
 
 #if defined(__aarch64__)
+#if defined(__OHOS__) && __clang_major__ < 16
+/* The native SDK's Clang 15 accepts feature attributes, but not the newer
+ * architecture spelling. Keep the same per-function CRC/crypto dispatch. */
+#define TARGET_ARMV8_WITH_CRC __attribute__((target("aes,crc")))
+#else
 #define TARGET_ARMV8_WITH_CRC __attribute__((target("arch=armv8-a+aes+crc")))
+#endif
 #else  // !defined(__aarch64__)
 #define TARGET_ARMV8_WITH_CRC __attribute__((target("crc")))
 #endif  // defined(__aarch64__)

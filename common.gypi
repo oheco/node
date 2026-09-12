@@ -570,6 +570,12 @@
           'NOMINMAX',
         ],
       }],
+      [ 'OS=="openharmony"', {
+        # The native SDK's libc++ 15 gates its C++20 ranges algorithms behind
+        # this opt-in. These algorithms are header-only; Node does not use the
+        # experimental library's out-of-line facilities.
+        'cflags_cc': [ '-D_LIBCPP_ENABLE_EXPERIMENTAL' ],
+      }],
       [ 'OS in "linux freebsd openbsd solaris aix os400 openharmony"', {
         'cflags': [ '-pthread' ],
         'ldflags': [ '-pthread' ],

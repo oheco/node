@@ -263,7 +263,11 @@ void LegacyTracingAgent::StartTracing(const std::string& categories) {
   if (tracing_file_writer_.id_ != LegacyTracingAgent::kDefaultHandleId) return;
 
   using std::operator""sv;
+#if NODE_OHOS_LEGACY_LIBCXX
+  auto parts = OhosSplitStringView(categories, ',');
+#else
   auto parts = std::views::split(categories, ","sv);
+#endif
 
   std::set<std::string> categories_set;
   for (const auto& s : parts) {

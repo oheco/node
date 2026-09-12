@@ -279,6 +279,7 @@
       'src/node_modules.h',
       'src/node_object_wrap.h',
       'src/node_options.h',
+      'src/node_ohos_compat.h',
       'src/node_options-inl.h',
       'src/node_perf.h',
       'src/node_perf_common.h',

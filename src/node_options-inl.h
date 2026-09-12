@@ -427,6 +427,17 @@ void OptionsParser<Options>::Parse(
         implied_name.insert(2, "no-");
       }
       auto [f, l] = implications_.equal_range(implied_name);
+#if NODE_OHOS_LEGACY_LIBCXX
+      std::for_each(f, l, [&](const auto& entry) {
+        const auto& value = entry.second;
+        if (value.type == kV8Option) {
+          v8_args->push_back(value.name);
+        } else {
+          *value.target_field->template Lookup<bool>(options) =
+              value.target_value;
+        }
+      });
+#else
       std::ranges::for_each(std::ranges::subrange(f, l) | std::views::values,
                             [&](const auto& value) {
                               if (value.type == kV8Option) {
@@ -436,6 +447,7 @@ void OptionsParser<Options>::Parse(
                                     options) = value.target_value;
                               }
                             });
+#endif
     }
 
     if (it == options_.end()) {

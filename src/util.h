@@ -31,6 +31,7 @@
 
 #include "node.h"
 #include "node_exit_code.h"
+#include "node_ohos_compat.h"
 
 #include <climits>
 #include <cstddef>
@@ -730,11 +731,13 @@ inline v8::MaybeLocal<v8::Value> ToV8Value(v8::Local<v8::Context> context,
                                            const std::unordered_map<T, U>& map,
                                            v8::Isolate* isolate = nullptr);
 
+#if !NODE_OHOS_LEGACY_LIBCXX
 template <typename T, std::size_t U>
 inline v8::MaybeLocal<v8::Value> ToV8Value(
     v8::Local<v8::Context> context,
     const std::ranges::elements_view<T, U>& vec,
     v8::Isolate* isolate = nullptr);
+#endif
 
 // These macros expects a `Isolate* isolate` and a `Local<Context> context`
 // to be in the scope.

@@ -439,6 +439,7 @@ v8::MaybeLocal<v8::Value> ToV8Value(v8::Local<v8::Context> context,
   return set_js;
 }
 
+#if !NODE_OHOS_LEGACY_LIBCXX
 template <typename T, std::size_t U>
 v8::MaybeLocal<v8::Value> ToV8Value(v8::Local<v8::Context> context,
                                     const std::ranges::elements_view<T, U>& vec,
@@ -457,6 +458,7 @@ v8::MaybeLocal<v8::Value> ToV8Value(v8::Local<v8::Context> context,
 
   return handle_scope.Escape(v8::Array::New(isolate, arr.out(), arr.length()));
 }
+#endif
 
 template <typename T, typename U>
 v8::MaybeLocal<v8::Value> ToV8Value(v8::Local<v8::Context> context,
