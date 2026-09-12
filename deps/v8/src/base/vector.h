@@ -293,7 +293,13 @@ class OwnedVector {
   // Elements in the new vector are default-initialized.
   static OwnedVector<T> NewForOverwrite(size_t size) {
     if (size == 0) return {};
+#if defined(__OHOS__) && !defined(__cpp_lib_smart_ptr_for_overwrite)
+    // The OHOS SDK's older libc++ lacks this C++20 allocation helper.
+    // Plain new[] preserves default initialization (no scalar zero-fill).
+    return OwnedVector<T>(std::unique_ptr<T[]>(new T[size]), size);
+#else
     return OwnedVector<T>(std::make_unique_for_overwrite<T[]>(size), size);
+#endif
   }
 
   // Allocates a new vector containing the specified collection of values.

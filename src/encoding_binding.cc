@@ -176,7 +176,11 @@ void BindingData::DecodeUTF8(const FunctionCallbackInfo<Value>& args) {
 
   std::unique_ptr<char[]> data_copy;
   if (isShared && length != 0) {
+#if defined(__OHOS__) && !defined(__cpp_lib_smart_ptr_for_overwrite)
+    data_copy = std::unique_ptr<char[]>(new char[length]);
+#else
     data_copy = std::make_unique_for_overwrite<char[]>(length);
+#endif
     memcpy(data_copy.get(), data, length);
     data = data_copy.get();
   }

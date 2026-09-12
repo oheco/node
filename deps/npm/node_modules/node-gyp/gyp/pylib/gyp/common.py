@@ -488,6 +488,8 @@ def GetFlavorByPlatform():
         "cygwin": "win",
         "win32": "win",
         "darwin": "mac",
+        "ohos": "openharmony",
+        "openharmony": "openharmony",
     }
 
     if sys.platform in flavors:
