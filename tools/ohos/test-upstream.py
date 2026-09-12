@@ -26,6 +26,7 @@ tests = [
     'buffer-bytelength', 'buffer-isutf8',
     'whatwg-encoding-custom-*',
     'crypto-hash', 'crypto-sign-verify', 'crypto-random', 'crypto-randomuuid',
+    'webcrypto-sign-verify-kmac',
     'fs-readfile', 'fs-readfile-error', 'fs-readfilesync-utf8-sizes',
     'fs-write-file', 'fs-write-file-flush', 'fs-fsync', 'fs-symlink', 'fs-watch',
     'child-process-fork-and-spawn', 'child-process-spawnsync',
