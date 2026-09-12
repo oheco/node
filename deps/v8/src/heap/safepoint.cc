@@ -160,7 +160,7 @@ void IsolateSafepoint::SetSafepointRequestedFlags(
 
       running_local_heaps.emplace_back(local_heap, qos_override);
 #else
-      running_local_heaps.emplace_back(local_heap);
+      running_local_heaps.emplace_back(RunningLocalHeap{local_heap});
 #endif
     }
     CHECK_IMPLIES(old_state.IsCollectionRequested(),
