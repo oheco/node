@@ -346,7 +346,7 @@ class FactoryBase : public TorqueGeneratedFactory<Impl> {
   // Create a new cons string object which consists of a pair of strings.
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<String>, DirectHandle<String>>)
-  V8_WARN_UNUSED_RESULT HandleType<String>::MaybeType NewConsString(
+  V8_WARN_UNUSED_RESULT typename HandleType<String>::MaybeType NewConsString(
       HandleType<String> left, HandleType<String> right,
       AllocationType allocation = AllocationType::kYoung);
 

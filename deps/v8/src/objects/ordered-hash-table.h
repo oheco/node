@@ -70,7 +70,7 @@ class OrderedHashTable : public FixedArray {
   // to add at least one new element.
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<Derived>, DirectHandle<Derived>>)
-  static HandleType<Derived>::MaybeType EnsureCapacityForAdding(
+  static typename HandleType<Derived>::MaybeType EnsureCapacityForAdding(
       Isolate* isolate, HandleType<Derived> table);
 
   // Returns an OrderedHashTable (possibly |table|) that's shrunken
@@ -218,11 +218,11 @@ class OrderedHashTable : public FixedArray {
 
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<Derived>, DirectHandle<Derived>>)
-  static HandleType<Derived>::MaybeType Rehash(Isolate* isolate,
+  static typename HandleType<Derived>::MaybeType Rehash(Isolate* isolate,
                                                HandleType<Derived> table);
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<Derived>, DirectHandle<Derived>>)
-  static HandleType<Derived>::MaybeType Rehash(Isolate* isolate,
+  static typename HandleType<Derived>::MaybeType Rehash(Isolate* isolate,
                                                HandleType<Derived> table,
                                                int new_capacity);
 
@@ -287,7 +287,7 @@ class V8_EXPORT_PRIVATE OrderedHashSet
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedHashSet>,
                                    DirectHandle<OrderedHashSet>>)
-  static HandleType<OrderedHashSet>::MaybeType Add(
+  static typename HandleType<OrderedHashSet>::MaybeType Add(
       Isolate* isolate, HandleType<OrderedHashSet> table,
       DirectHandle<Object> value);
   static Handle<FixedArray> ConvertToKeysArray(Isolate* isolate,
@@ -296,12 +296,12 @@ class V8_EXPORT_PRIVATE OrderedHashSet
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedHashSet>,
                                    DirectHandle<OrderedHashSet>>)
-  static HandleType<OrderedHashSet>::MaybeType Rehash(
+  static typename HandleType<OrderedHashSet>::MaybeType Rehash(
       Isolate* isolate, HandleType<OrderedHashSet> table);
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedHashSet>,
                                    DirectHandle<OrderedHashSet>>)
-  static HandleType<OrderedHashSet>::MaybeType Rehash(
+  static typename HandleType<OrderedHashSet>::MaybeType Rehash(
       Isolate* isolate, HandleType<OrderedHashSet> table, int new_capacity);
 
   template <typename IsolateT>
@@ -343,12 +343,12 @@ class V8_EXPORT_PRIVATE OrderedHashMap
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedHashMap>,
                                    DirectHandle<OrderedHashMap>>)
-  static HandleType<OrderedHashMap>::MaybeType Rehash(
+  static typename HandleType<OrderedHashMap>::MaybeType Rehash(
       Isolate* isolate, HandleType<OrderedHashMap> table);
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedHashMap>,
                                    DirectHandle<OrderedHashMap>>)
-  static HandleType<OrderedHashMap>::MaybeType Rehash(
+  static typename HandleType<OrderedHashMap>::MaybeType Rehash(
       Isolate* isolate, HandleType<OrderedHashMap> table, int new_capacity);
 
   void SetEntry(InternalIndex entry, Tagged<Object> key, Tagged<Object> value);
@@ -816,7 +816,7 @@ class V8_EXPORT_PRIVATE OrderedNameDictionary
   template <template <typename> typename HandleType>
     requires(std::is_convertible_v<HandleType<OrderedNameDictionary>,
                                    DirectHandle<OrderedNameDictionary>>)
-  static HandleType<OrderedNameDictionary>::MaybeType Rehash(
+  static typename HandleType<OrderedNameDictionary>::MaybeType Rehash(
       Isolate* isolate, HandleType<OrderedNameDictionary> table,
       int new_capacity);
 

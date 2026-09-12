@@ -866,7 +866,7 @@ MaybeHandle<SeqTwoByteString> FactoryBase<Impl>::NewRawSharedTwoByteString(
 template <typename Impl>
 template <template <typename> typename HandleType>
   requires(std::is_convertible_v<HandleType<String>, DirectHandle<String>>)
-HandleType<String>::MaybeType FactoryBase<Impl>::NewConsString(
+typename HandleType<String>::MaybeType FactoryBase<Impl>::NewConsString(
     HandleType<String> left, HandleType<String> right,
     AllocationType allocation) {
   if (IsThinString(*left)) {
