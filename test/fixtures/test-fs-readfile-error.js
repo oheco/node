@@ -19,4 +19,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require('fs').readFileSync('/');  // throws EISDIR
+// Use a readable directory: a sandbox may deny access to '/' before the read
+// reaches the EISDIR check. Keep asserting the directory-read error itself.
+require('fs').readFileSync(process.env.NODE_TEST_DIR || __dirname);  // throws EISDIR

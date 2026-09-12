@@ -41,7 +41,7 @@ try:
     os.write(master, b'console.log(String.fromCodePoint(0x9e3f,0x8499))\n')
     expect('\u9e3f\u8499'.encode())
     os.write(master, b'const unfinished =\n')
-    expect(b'... ')
+    expect(b'| ')
     os.write(master, b'\x03')
     expect(b'> ')
     os.write(master, b"console.log('recovered-'+(20+22))\n")

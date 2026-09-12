@@ -10,6 +10,8 @@ import tempfile
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('node', type=Path)
 parser.add_argument('--jobs', type=int, default=2)
+parser.add_argument('--temp-parent', type=Path, default=Path(os.environ.get(
+    'NODE_OHOS_TEST_TMPDIR', '/data/storage/el2/base/haps/entry/files')))
 args = parser.parse_args()
 source = Path(__file__).resolve().parents[2]
 node = args.node.resolve()
@@ -43,7 +45,10 @@ tests = [
 environment = os.environ.copy()
 for name in ('NODE_OPTIONS', 'NODE_PATH', 'LD_PRELOAD', 'LD_LIBRARY_PATH'):
     environment.pop(name, None)
-with tempfile.TemporaryDirectory(prefix='node-upstream-') as temporary:
+# common.PIPE is relative to the source cwd. Use a short private path so it
+# stays below sockaddr_un's length limit, and retain the source cwd needed by
+# upstream test reporter paths.
+with tempfile.TemporaryDirectory(prefix='nt-', dir=args.temp_parent) as temporary:
     environment['NODE_TEST_DIR'] = temporary
     command = [sys.executable, str(source / 'tools/test.py'),
         '--shell', str(node), '--arch', 'arm64', '-j', str(args.jobs),

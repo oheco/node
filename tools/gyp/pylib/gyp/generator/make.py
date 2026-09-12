@@ -1439,7 +1439,16 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
             includes = config.get("include_dirs")
             if includes:
                 includes = [Sourceify(self.Absolutify(i)) for i in includes]
-            self.WriteList(includes, "INCS_%s" % configname, prefix="-I")
+            # Native OHOS packages can be installed in paths containing spaces.
+            # Quote each include option while retaining Make's $(srcdir) expansion.
+            include_quoter = QuoteIfNecessary
+            if self.flavor == "openharmony":
+                include_quoter = lambda value: EscapeShellArgument(value).replace(
+                    "#", r"\#"
+                )
+            self.WriteList(
+                includes, "INCS_%s" % configname, prefix="-I", quoter=include_quoter
+            )
 
         compilable = list(filter(Compilable, sources))
         objs = [self.Objectify(self.Absolutify(Target(c))) for c in compilable]
