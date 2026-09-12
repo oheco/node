@@ -59,6 +59,23 @@ await test('ES modules and CommonJS in a path containing spaces', async () => {
   assert.equal((await import(pathToFileURL(path.join(dir, 'number.mjs')))).default, 42);
 });
 
+await test('JSON object and array fast paths, Unicode and error cases', () => {
+  const values = Array.from({ length: 1000 }, (_, index) => ({
+    index, name: `item-${index}`, nested: { message: '鸿蒙\n"quoted"' },
+    '\u4e2d\u6587': 'value', 'quote"key': 'escaped',
+  }));
+  for (let pass = 0; pass < 3; pass++) {
+    assert.deepEqual(JSON.parse(JSON.stringify(values)), values);
+  }
+  assert.equal(JSON.stringify([NaN, Infinity, -Infinity, -0]), '[null,null,null,0]');
+  assert.equal(JSON.stringify('\ud800'), '"\\ud800"');
+  assert.equal(JSON.stringify({ toJSON() { return 42; } }), '42');
+  const circular = {};
+  circular.self = circular;
+  assert.throws(() => JSON.stringify(circular), TypeError);
+  assert.throws(() => JSON.stringify(1n), TypeError);
+});
+
 await test('filesystem writes, fsync, rename, symlinks and error paths', () => {
   const file = path.join(tmp, '写入.txt');
   const fd = fs.openSync(file, 'wx');

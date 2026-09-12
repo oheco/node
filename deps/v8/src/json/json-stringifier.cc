@@ -24,6 +24,14 @@
 #include "src/objects/tagged.h"
 #include "src/strings/string-builder-inl.h"
 
+#if defined(__OHOS__) && defined(__clang__) && __clang_major__ < 16
+// Native Clang 15 crashes on statement-level always_inline applied to these
+// dependent template calls. Retain the fast JSON path and ordinary O3 inlining.
+#define V8_JSON_INLINE_STATEMENT
+#else
+#define V8_JSON_INLINE_STATEMENT V8_INLINE_STATEMENT
+#endif
+
 namespace v8 {
 namespace internal {
 
@@ -2373,13 +2381,13 @@ FastJsonStringifier<Char>::SerializeObjectKey(
   ReadOnlyRoots roots(isolate_);
   Tagged<Map> map = key->map();
   if (map == roots.internalized_one_byte_string_map()) {
-    V8_INLINE_STATEMENT return SerializeObjectKey<SeqOneByteString,
+    V8_JSON_INLINE_STATEMENT return SerializeObjectKey<SeqOneByteString,
                                                   no_escaping>(key, comma,
                                                                no_gc);
   } else if (map == roots.external_internalized_one_byte_string_map() ||
              map ==
                  roots.uncached_external_internalized_one_byte_string_map()) {
-    V8_INLINE_STATEMENT return SerializeObjectKey<ExternalOneByteString,
+    V8_JSON_INLINE_STATEMENT return SerializeObjectKey<ExternalOneByteString,
                                                   no_escaping>(key, comma,
                                                                no_gc);
   } else {
@@ -2409,12 +2417,12 @@ FastJsonStringifier<Char>::SerializeObjectKey(
   InstanceType instance_type = key->map()->instance_type();
   switch (instance_type) {
     case INTERNALIZED_ONE_BYTE_STRING_TYPE:
-      V8_INLINE_STATEMENT return SerializeObjectKey<SeqOneByteString,
+      V8_JSON_INLINE_STATEMENT return SerializeObjectKey<SeqOneByteString,
                                                     no_escaping>(key, comma,
                                                                  no_gc);
     case EXTERNAL_INTERNALIZED_ONE_BYTE_STRING_TYPE:
     case UNCACHED_EXTERNAL_INTERNALIZED_ONE_BYTE_STRING_TYPE:
-      V8_INLINE_STATEMENT return SerializeObjectKey<ExternalOneByteString,
+      V8_JSON_INLINE_STATEMENT return SerializeObjectKey<ExternalOneByteString,
                                                     no_escaping>(key, comma,
                                                                  no_gc);
     case INTERNALIZED_TWO_BYTE_STRING_TYPE:
@@ -2444,7 +2452,7 @@ template <typename StringT, bool no_escaping>
 FastJsonStringifierObjectKeyResult
 FastJsonStringifier<Char>::SerializeObjectKey(
     Tagged<String> obj, bool comma, const DisallowGarbageCollection& no_gc) {
-  using StringChar = StringT::Char;
+  using StringChar = typename StringT::Char;
   if constexpr (is_one_byte && sizeof(StringChar) == 2) {
     // no_escaping is only possible if we have already seen all the keys in a
     // map. But it is not possible we have seen a two-byte string and are still
@@ -2493,7 +2501,7 @@ template <typename Char>
 template <typename StringT>
 FastJsonStringifierResult FastJsonStringifier<Char>::SerializeString(
     Tagged<HeapObject> obj, const DisallowGarbageCollection& no_gc) {
-  using StringChar = StringT::Char;
+  using StringChar = typename StringT::Char;
   if constexpr (is_one_byte && sizeof(StringChar) == 2) {
     return CHANGE_ENCODING;
   } else {
@@ -2808,7 +2816,7 @@ FastJsonStringifierResult FastJsonStringifier<Char>::ResumeJSObject(
     Tagged<String> key_name = Cast<String>(name);
     FastJsonStringifierObjectKeyResult key_result;
     if constexpr (mode == ResumeJSObjectMode::kWithMapCache) {
-      V8_INLINE_STATEMENT key_result =
+      V8_JSON_INLINE_STATEMENT key_result =
           SerializeObjectKey<true>(key_name, comma, no_gc);
       DCHECK_EQ(key_result, FastJsonStringifierObjectKeyResult::kSuccess);
     } else {
@@ -2856,7 +2864,7 @@ FastJsonStringifierResult FastJsonStringifier<Char>::ResumeJSObject(
     DisableGCMole no_gc_mole;
     FastJsonStringifierResult result;
     if constexpr (mode == ResumeJSObjectMode::kWithMapCache) {
-      V8_INLINE_STATEMENT result = TrySerializeSimpleObject(property);
+      V8_JSON_INLINE_STATEMENT result = TrySerializeSimpleObject(property);
     } else {
       result = TrySerializeSimpleObject(property);
     }
@@ -3017,7 +3025,7 @@ FastJsonStringifierResult FastJsonStringifier<Char>::SerializeFixedArrayElement(
     // SerializeJSPrimitiveWrapper for explanation.
     DisableGCMole no_gc_mole;
     FastJsonStringifierResult result;
-    V8_INLINE_STATEMENT result = TrySerializeSimpleObject(obj);
+    V8_JSON_INLINE_STATEMENT result = TrySerializeSimpleObject(obj);
     switch (result) {
       case UNDEFINED:
         AppendCStringLiteral("null");

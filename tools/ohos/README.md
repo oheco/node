@@ -55,6 +55,9 @@ For the same compiler, heap visitor predicates are checked with `static_assert`
 when the selected method is instantiated, avoiding premature constraint
 evaluation while the derived visitor is incomplete. The garbage collection
 algorithms and their compile-time predicates remain enabled.
+In the JSON stringifier only, statement-level forced-inline annotations are
+omitted on native Clang 15 because they crash its parser on dependent template
+calls. The fast JSON implementation and normal optimization remain enabled.
 
 ## Validation in progress
 
