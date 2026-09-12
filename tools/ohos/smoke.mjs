@@ -216,6 +216,21 @@ await test('V8 optimizing JIT generates and executes machine code', () => {
   assert.match(result.stdout, /TURBOFAN|MAGLEV/);
 });
 
+await test('asm.js compiles through the WebAssembly module builder', () => {
+  const code = `function Module() {
+    'use asm';
+    function add(a,b) { a=a|0; b=b|0; return (a+b)|0; }
+    return add;
+  }
+  const add = Module();
+  if(add(19,23)!==42 || !%IsAsmWasmCode(Module))process.exit(1);
+  console.log('asm-wasm-result=42');`;
+  const result = spawnSync(process.execPath, ['--allow-natives-syntax', '--validate-asm', '-e', code],
+    { encoding: 'utf8', timeout: 30000 });
+  assert.equal(result.status, 0, `${result.error ?? ''}\n${result.stderr}`);
+  assert.match(result.stdout, /asm-wasm-result=42/);
+});
+
 await test('minor and major garbage collection preserve live objects', () => {
   const code = `const assert = require('node:assert/strict');
     const kept = Array.from({length: 2000}, (_, i) => ({value:i, text:'keep-'+i}));

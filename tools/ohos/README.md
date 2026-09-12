@@ -48,8 +48,9 @@ have OHOS-specific equivalents. This does not require `libc++experimental`.
 The SDK also lacks `make_unique_for_overwrite`, for which the adaptation uses
 equivalent default-initialized arrays. zlib keeps ARM CRC/crypto acceleration
 using the function target attribute spelling accepted by native Clang 15.
-V8 dependent types use explicit `typename`, and its WebAssembly type index uses
-brace initialization, for C++20 syntax that Clang 15 does not yet implement.
+V8 dependent types use explicit `typename`. Its WebAssembly type indices and
+recursive groups, Maglev metadata, and safepoint records use brace initialization
+where Clang 15 does not yet support C++20 parenthesized aggregate initialization.
 These spelling changes preserve the upstream types and behavior.
 For the same compiler, heap visitor predicates are checked with `static_assert`
 when the selected method is instantiated, avoiding premature constraint

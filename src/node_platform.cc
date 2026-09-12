@@ -843,8 +843,8 @@ void TaskQueue<T>::Locked::Stop() {
 }
 
 template <class T>
-TaskQueue<T>::PriorityQueue TaskQueue<T>::Locked::PopAll() {
-  TaskQueue<T>::PriorityQueue result;
+typename TaskQueue<T>::PriorityQueue TaskQueue<T>::Locked::PopAll() {
+  typename TaskQueue<T>::PriorityQueue result;
   result.swap(queue_->task_queue_);
   return result;
 }
