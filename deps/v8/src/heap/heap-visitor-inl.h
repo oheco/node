@@ -96,16 +96,22 @@ Tagged<T> HeapVisitor<ConcreteVisitor>::Cast(Tagged<HeapObject> object,
 
 template <typename ConcreteVisitor>
 size_t HeapVisitor<ConcreteVisitor>::Visit(Tagged<HeapObject> object)
+#if !defined(__OHOS__) || !defined(__clang__) || __clang_major__ >= 16
   requires(!ConcreteVisitor::UsePrecomputedObjectSize())
+#endif
 {
+  static_assert(!ConcreteVisitor::UsePrecomputedObjectSize());
   return Visit(object->map(cage_base()), object);
 }
 
 template <typename ConcreteVisitor>
 size_t HeapVisitor<ConcreteVisitor>::Visit(Tagged<Map> map,
                                            Tagged<HeapObject> object)
+#if !defined(__OHOS__) || !defined(__clang__) || __clang_major__ >= 16
   requires(!ConcreteVisitor::UsePrecomputedObjectSize())
+#endif
 {
+  static_assert(!ConcreteVisitor::UsePrecomputedObjectSize());
   return Visit(map, object, MaybeObjectSize());
 }
 
@@ -113,8 +119,11 @@ template <typename ConcreteVisitor>
 size_t HeapVisitor<ConcreteVisitor>::Visit(Tagged<Map> map,
                                            Tagged<HeapObject> object,
                                            int object_size)
+#if !defined(__OHOS__) || !defined(__clang__) || __clang_major__ >= 16
   requires(ConcreteVisitor::UsePrecomputedObjectSize())
+#endif
 {
+  static_assert(ConcreteVisitor::UsePrecomputedObjectSize());
   return Visit(map, object, MaybeObjectSize(object_size));
 }
 

@@ -199,6 +199,25 @@ await test('V8 optimizing JIT generates and executes machine code', () => {
   assert.match(result.stdout, /TURBOFAN|MAGLEV/);
 });
 
+await test('minor and major garbage collection preserve live objects', () => {
+  const code = `const assert = require('node:assert/strict');
+    const kept = Array.from({length: 2000}, (_, i) => ({value:i, text:'keep-'+i}));
+    for (let pass=0; pass<20; pass++) {
+      globalThis.garbage = Array.from({length:10000}, (_, i) => ({value:i, text:'discard-'+i}));
+      if (pass % 5 === 0) gc();
+    }
+    globalThis.garbage = null; gc();
+    for (let i=0; i<kept.length; i++) assert.deepEqual(kept[i], {value:i, text:'keep-'+i});
+    console.log('gc-live-objects-ok');`;
+  const result = spawnSync(process.execPath, ['--expose-gc', '--trace-gc',
+    '--max-old-space-size=96', '--max-semi-space-size=1', '-e', code],
+    { encoding: 'utf8', timeout: 60000 });
+  assert.equal(result.status, 0, `${result.error ?? ''}\n${result.stderr}`);
+  assert.match(result.stdout, /gc-live-objects-ok/);
+  assert.match(result.stdout, /Scavenge|Minor Mark-Sweep/);
+  assert.match(result.stdout, /Mark-Compact/);
+});
+
 await test('built-in SQLite, transactions and WAL', async () => {
   const { DatabaseSync } = await import('node:sqlite');
   const db = new DatabaseSync(path.join(tmp, 'test.db'));

@@ -196,6 +196,15 @@ class HeapVisitor : public ObjectVisitorWithCageBases {
   inline explicit HeapVisitor(Isolate* isolate);
   inline explicit HeapVisitor(Heap* heap);
 
+#if defined(__OHOS__) && defined(__clang__) && __clang_major__ < 16
+  // Clang 15 evaluates these CRTP constraints before the derived visitor is
+  // complete. The definitions enforce the same predicates with static_assert
+  // when the function is instantiated. The overloads have distinct arguments.
+  V8_INLINE size_t Visit(Tagged<HeapObject> object);
+  V8_INLINE size_t Visit(Tagged<Map> map, Tagged<HeapObject> object);
+  V8_INLINE size_t Visit(Tagged<Map> map, Tagged<HeapObject> object,
+                        int object_size);
+#else
   V8_INLINE size_t Visit(Tagged<HeapObject> object)
     requires(!ConcreteVisitor::UsePrecomputedObjectSize());
 
@@ -205,6 +214,7 @@ class HeapVisitor : public ObjectVisitorWithCageBases {
   V8_INLINE size_t Visit(Tagged<Map> map, Tagged<HeapObject> object,
                          int object_size)
     requires(ConcreteVisitor::UsePrecomputedObjectSize());
+#endif
 
  protected:
   V8_INLINE size_t Visit(Tagged<Map> map, Tagged<HeapObject> object,

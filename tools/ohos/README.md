@@ -51,6 +51,10 @@ using the function target attribute spelling accepted by native Clang 15.
 V8 dependent types use explicit `typename`, and its WebAssembly type index uses
 brace initialization, for C++20 syntax that Clang 15 does not yet implement.
 These spelling changes preserve the upstream types and behavior.
+For the same compiler, heap visitor predicates are checked with `static_assert`
+when the selected method is instantiated, avoiding premature constraint
+evaluation while the derived visitor is incomplete. The garbage collection
+algorithms and their compile-time predicates remain enabled.
 
 ## Validation in progress
 
